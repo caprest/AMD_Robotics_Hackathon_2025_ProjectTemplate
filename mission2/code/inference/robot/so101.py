@@ -1,13 +1,15 @@
-from .base import BaseRobot
+from dataclasses import dataclass
+from enum import Enum
+
+import numpy as np
+import torch
+from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
+from lerobot.policies.utils import prepare_observation_for_inference
 from lerobot.robots.so101_follower import SO101Follower
 from lerobot.robots.so101_follower.config_so101_follower import SO101FollowerConfig
 from lerobot.robots.utils import make_robot_from_config
-from enum import Enum
-import numpy as np
-from dataclasses import dataclass
-from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
-from lerobot.policies.utils import prepare_observation_for_inference
-import torch
+
+from .base import BaseRobot
 
 
 class So101MotorPosNames(Enum):

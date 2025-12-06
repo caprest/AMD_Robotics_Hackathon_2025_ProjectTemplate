@@ -21,13 +21,7 @@ class DummyRobot(BaseRobot):
         self.sequence_index += 1
         if self.sequence_index >= len(self.dataset):
             self.sequence_index = 0
-
-        for key, value in observation.items():
-            if "image" not in key:
-                print(key, value)
-            else:
-                print(key, value.shape)
         return observation
 
     def send_action(self, action: dict):
-        print("action: ", action["action"])
+        pass
