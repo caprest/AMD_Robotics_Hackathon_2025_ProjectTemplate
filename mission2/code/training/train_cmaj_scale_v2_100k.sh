@@ -10,12 +10,14 @@ source .env
 
 lerobot-train \
   --dataset.repo_id=${DATSET_REPO_ID} \
-  --batch_size=128 \
+  --batch_size=64 \
+  --save_freq=5000 \
+  --log_freq=50 \
   --steps=${STEPS} \
   --output_dir=${OUTPUT_DIR} \
   --job_name=${JOB_NAME} \
   --policy.device=cuda \
   --policy.type=act \
-  --policy.push_to_hub=false \
-  --wandb.enable=true
-  --policy.push_to_hub=${OUTPUT_DIR}/checkpoints/${STEPS}/pretrained_model
+  --policy.repo_id=${JOB_NAME} \
+  --wandb.enable=true \
+  --policy.push_to_hub=true
