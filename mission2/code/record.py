@@ -50,7 +50,7 @@ from lerobot.utils.utils import (
 from lerobot.utils.visualization_utils import init_rerun, log_rerun_data
 
 
-NUM_EPISODES = 20 
+NUM_EPISODES = 20
 FPS = 30
 EPISODE_TIME_SEC = 5
 RESET_TIME_SEC = 4
@@ -100,8 +100,6 @@ class KeyWatcher:
 watcher = KeyWatcher()
 
 
-
-
 def init_keyboard_listener():
     """
     Initializes a non-blocking keyboard listener for real-time user interaction.
@@ -140,7 +138,9 @@ def init_keyboard_listener():
                 print("Right arrow key pressed. Exiting loop...")
                 events["exit_early"] = True
             elif key == keyboard.Key.left:
-                print("Left arrow key pressed. Exiting loop and rerecord the last episode...")
+                print(
+                    "Left arrow key pressed. Exiting loop and rerecord the last episode..."
+                )
                 events["rerecord_episode"] = True
                 events["exit_early"] = True
             elif key == keyboard.Key.esc:
@@ -152,6 +152,7 @@ def init_keyboard_listener():
                 events["p_pushing"] = True
         except Exception as e:
             print(f"Error handling key press: {e}")
+
     def on_release(key):
         try:
             if hasattr(key, "char") and key.char == "p":
@@ -188,9 +189,11 @@ def record_loop(
     single_task: str | None = None,
     display_data: bool = False,
 ):
-    policy=None
+    policy = None
     if dataset is not None and dataset.fps != fps:
-        raise ValueError(f"The dataset fps should be equal to requested fps ({dataset.fps} != {fps}).")
+        raise ValueError(
+            f"The dataset fps should be equal to requested fps ({dataset.fps} != {fps})."
+        )
 
     teleop_arm = teleop_keyboard = None
 
@@ -214,8 +217,7 @@ def record_loop(
 
         # Applies a pipeline to the raw teleop action, default is IdentityProcessor
         # Convert tuple to dictionary for processor
-        act_processed_teleop = teleop_action_processor((act,obs))
-
+        act_processed_teleop = teleop_action_processor((act, obs))
 
         # Applies a pipeline to the action, default is IdentityProcessor
         action_values = act_processed_teleop
@@ -236,20 +238,27 @@ def record_loop(
             keyboard_state = np.array([0.0], dtype=np.float32)  # 'p' key is not pressed
 
         # Print only when keyboard state changes
-        if previous_keyboard_state is None or not np.array_equal(keyboard_state, previous_keyboard_state):
+        if previous_keyboard_state is None or not np.array_equal(
+            keyboard_state, previous_keyboard_state
+        ):
             state_label = "PRESSED" if keyboard_state[0] == 1.0 else "RELEASED"
             print(f"Keyboard state changed: 'p' key {state_label}")
             previous_keyboard_state = keyboard_state.copy()
 
         # Write to dataset
         if dataset is not None:
-            observation_frame = build_dataset_frame(dataset.features, obs_processed, prefix=OBS_STR)
-            action_frame = build_dataset_frame(dataset.features, action_values, prefix=ACTION)
+            observation_frame = build_dataset_frame(
+                dataset.features, obs_processed, prefix=OBS_STR
+            )
+            action_frame = build_dataset_frame(
+                dataset.features, action_values, prefix=ACTION
+            )
             frame = {
-                **observation_frame, **action_frame, "task": single_task,
-                "input.keyboard": keyboard_state,  
-
-             }
+                **observation_frame,
+                **action_frame,
+                "task": single_task,
+                "input.keyboard": keyboard_state,
+            }
             dataset.add_frame(frame)
 
         if display_data:
@@ -261,9 +270,8 @@ def record_loop(
         timestamp = time.perf_counter() - start_episode_t
 
 
-
-
 # Create the robot and teleoperator configurations
+
 
 def load_robot_config():
     # Load camera configurations from JSON file
@@ -273,28 +281,27 @@ def load_robot_config():
         camera_config_json = json.load(f)
     for key, value in camera_config_json.items():
         camera_config[key] = OpenCVCameraConfig(**value)
-    
+
     # Create robot configuration
     robot_config = SO101FollowerConfig(
-        port=os.environ["ROBOT_PORT"], 
-        id=os.environ["ROBOT_ID"],
-        cameras=camera_config
+        port=os.environ["ROBOT_PORT"], id=os.environ["ROBOT_ID"], cameras=camera_config
     )
-    
+
     # Create teleoperator configuration
     teleop_config = SO101LeaderConfig(
-        port=os.environ["TELEOP_PORT"],
-        id=os.environ["TELEOP_ID"]
+        port=os.environ["TELEOP_PORT"], id=os.environ["TELEOP_ID"]
     )
-    
+
     return robot_config, teleop_config
+
 
 def beep(times=1, frequency=500, duration=0.2):
     """Play a simple beep sound using pygame"""
     try:
         import pygame
+
         pygame.mixer.init(frequency=22050, size=-16, channels=1)
-        
+
         for _ in range(times):
             # Generate a simple sine wave
             sample_rate = 22050
@@ -312,25 +319,27 @@ def beep(times=1, frequency=500, duration=0.2):
         # Fallback to terminal beep
         print(f"Could not play sound: {e}")
         for _ in range(times):
-            sys.stdout.write('\a')
+            sys.stdout.write("\a")
             sys.stdout.flush()
             time.sleep(0.2)
+
 
 def init_robot_and_teleop():
     robot_config, teleop_config = load_robot_config()
     robot = SO101Follower(robot_config)
     teleop = SO101Leader(teleop_config)
-    
+
     # Connect to devices
     print(f"Connecting to robot on {robot_config.port}...")
     robot.connect()
     print("Robot connected successfully")
-    
+
     print(f"Connecting to teleoperator on {teleop_config.port}...")
     teleop.connect()
     print("Teleoperator connected successfully")
-    
+
     return robot, teleop
+
 
 def init_dataset(robot, dataset_name="test-recording"):
     now = datetime.datetime.now()
@@ -338,13 +347,13 @@ def init_dataset(robot, dataset_name="test-recording"):
     hf_repo_id = f"abemii/{dataset_name}-{timestamp}"
     action_features = hw_to_dataset_features(robot.action_features, "action")
     obs_features = hw_to_dataset_features(robot.observation_features, "observation")
-    KEYBOARD_KEYS = ['p']
+    KEYBOARD_KEYS = ["p"]
     keyboard_features = {
-        "input.keyboard": {  
-            "dtype": "float32",  
-            "shape": (len(KEYBOARD_KEYS),),  # キーの数  
-            "names": KEYBOARD_KEYS  
-        }  
+        "input.keyboard": {
+            "dtype": "float32",
+            "shape": (len(KEYBOARD_KEYS),),  # キーの数
+            "names": KEYBOARD_KEYS,
+        }
     }
 
     dataset_features = {**action_features, **obs_features, **keyboard_features}
@@ -362,11 +371,36 @@ def init_dataset(robot, dataset_name="test-recording"):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--num_episodes", type=int, default=NUM_EPISODES, help="Number of episodes to record")
-    parser.add_argument("--episode_time_sec", type=int, default=EPISODE_TIME_SEC, help="Duration of each episode in seconds")
-    parser.add_argument("--reset_time_sec", type=int, default=RESET_TIME_SEC, help="Duration of reset time between episodes in seconds")
-    parser.add_argument("--task_description", type=str, default=TASK_DESCRIPTION, help="Description of the task")
-    parser.add_argument("--dataset_name", type=str, default="test-recording", help="Dataset name (will be prefixed with 'abemii/', e.g., 'my-task')")
+    parser.add_argument(
+        "--num_episodes",
+        type=int,
+        default=NUM_EPISODES,
+        help="Number of episodes to record",
+    )
+    parser.add_argument(
+        "--episode_time_sec",
+        type=int,
+        default=EPISODE_TIME_SEC,
+        help="Duration of each episode in seconds",
+    )
+    parser.add_argument(
+        "--reset_time_sec",
+        type=int,
+        default=RESET_TIME_SEC,
+        help="Duration of reset time between episodes in seconds",
+    )
+    parser.add_argument(
+        "--task_description",
+        type=str,
+        default=TASK_DESCRIPTION,
+        help="Description of the task",
+    )
+    parser.add_argument(
+        "--dataset_name",
+        type=str,
+        default="test-recording",
+        help="Dataset name (will be prefixed with 'abemii/', e.g., 'my-task')",
+    )
     args = parser.parse_args()
 
     robot, teleop = init_robot_and_teleop()
@@ -377,31 +411,34 @@ def main():
     init_rerun(session_name="recording")
     episode_idx = 0
 
-    teleop_action_processor, robot_action_processor, robot_observation_processor = make_default_processors()
+    teleop_action_processor, robot_action_processor, robot_observation_processor = (
+        make_default_processors()
+    )
 
     log_say(f"Starting record loop for {args.num_episodes} episodes")
-    time.sleep(1) # Short delay before starting
+    time.sleep(1)  # Short delay before starting
     while episode_idx < args.num_episodes and not events["stop_recording"]:
         print(f"\n=== Starting episode {episode_idx + 1}/{args.num_episodes} ===")
         beep(1)  # Beep once at episode start
 
-        
         record_loop(
-             robot=robot,
-             events=events,
-             fps=FPS,
-             teleop=teleop,
-             teleop_action_processor=teleop_action_processor,
-             robot_action_processor=robot_action_processor,
-             robot_observation_processor=robot_observation_processor,
-             dataset=dataset,
-             control_time_s=args.episode_time_sec,
-             single_task=args.task_description,
-             display_data=True,
+            robot=robot,
+            events=events,
+            fps=FPS,
+            teleop=teleop,
+            teleop_action_processor=teleop_action_processor,
+            robot_action_processor=robot_action_processor,
+            robot_observation_processor=robot_observation_processor,
+            dataset=dataset,
+            control_time_s=args.episode_time_sec,
+            single_task=args.task_description,
+            display_data=True,
         )
         beep(2)
 
-        if not events["stop_recording"] and (episode_idx < args.num_episodes - 1 or events["rerecord_episode"]):
+        if not events["stop_recording"] and (
+            episode_idx < args.num_episodes - 1 or events["rerecord_episode"]
+        ):
             log_say("Reset the environment")
             # Reset environment time without recording (by not passing dataset)
             record_loop(
@@ -418,24 +455,24 @@ def main():
             )
             log_say("Environment reset complete")
 
-
         dataset.save_episode()
         episode_idx += 1
-    
+
     # Clean up
     log_say("Stop recording")
     robot.disconnect()
     teleop.disconnect()
     dataset.push_to_hub()
-    
+
     # Print dataset repository ID for reference
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print(f"Dataset saved successfully!")
     print(f"Repository ID: {dataset.repo_id}")
     print(f"Total episodes recorded: {dataset.num_episodes}")
     print(f"To view the dataset, run:")
-    print(f"  python dump_dataset.py \"{dataset.repo_id}\"")
-    print(f"{'='*80}\n")
+    print(f'  python dump_dataset.py "{dataset.repo_id}"')
+    print(f"{'=' * 80}\n")
+
 
 if __name__ == "__main__":
     try:
