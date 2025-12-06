@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import torch
 
 from lerobot.policies.act.modeling_act import ACTPolicy
@@ -7,13 +5,13 @@ from lerobot.processor import PolicyProcessorPipeline
 
 
 class ActPolicy:
-    def __init__(self, pretrained_path: Path):
-        self.policy = ACTPolicy.from_pretrained(pretrained_path).cuda()
+    def __init__(self, repo_id: str):
+        self.policy = ACTPolicy.from_pretrained(repo_id).cuda()
         self.preprocessor = PolicyProcessorPipeline.from_pretrained(
-            pretrained_path, config_filename="policy_preprocessor.json"
+            repo_id, config_filename="policy_preprocessor.json"
         )
         self.postprocessor = PolicyProcessorPipeline.from_pretrained(
-            pretrained_path, config_filename="policy_postprocessor.json"
+            repo_id, config_filename="policy_postprocessor.json"
         )
 
     def inference(self, observation: dict) -> torch.Tensor:

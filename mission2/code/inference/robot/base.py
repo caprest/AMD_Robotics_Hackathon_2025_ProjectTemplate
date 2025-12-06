@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from lerobot.robots.config import RobotConfig
+import torch
 
 
 class BaseRobot(ABC):
@@ -13,7 +14,7 @@ class BaseRobot(ABC):
         pass
 
     @abstractmethod
-    def get_observation(self):
+    def get_observation(self) -> dict[str, torch.Tensor]:
         pass
 
     @abstractmethod

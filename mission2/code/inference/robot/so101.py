@@ -6,6 +6,8 @@ from enum import Enum
 import numpy as np
 from dataclasses import dataclass
 from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
+from lerobot.policies.utils import prepare_observation_for_inference
+import torch
 
 
 class So101MotorPosNames(Enum):
@@ -90,15 +92,17 @@ class So101Robot(BaseRobot):
         self.robot: SO101Follower = make_robot_from_config(config)
 
     def connect(self):
+        print("🤖 Connecting robot...")
         self.robot.connect()
         if self.robot.is_connected:
             print("✅ Successfully connected SO101 Follower Arm")
         else:
             raise ValueError("❌ Failed to connect SO101 Follower Arm")
 
-    def get_observation(self):
+    def get_observation(self) -> dict[str, torch.Tensor]:
         obs = self.robot.get_observation()
         obs = _postprocess_observation(obs)
+        obs = prepare_observation_for_inference(obs, "cuda")
         return obs
 
     def disconnect(self):

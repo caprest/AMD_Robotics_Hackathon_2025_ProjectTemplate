@@ -1,32 +1,33 @@
 from .base import BaseRobot
 import torch
 from ..dataset.dataset import Dataset
-from .so101 import So101Robot
 
 
-class SimRobot(BaseRobot):
-    """Simulates a robot. It uses dataset to get the observation and send the action to the robot.
-
-    Args:
-        dataset_path: Path to the dataset.
-    """
+class DummyRobot(BaseRobot):
+    """Dummy robot without any physical connection."""
 
     def __init__(self, dataset: Dataset):
         self.dataset = dataset
         self.sequence_index = 0
 
-        self.robot = So101Robot()
-
     def connect(self):
-        self.robot.connect()
+        pass
 
     def disconnect(self):
-        self.robot.disconnect()
+        pass
 
     def get_observation(self) -> dict[str, torch.Tensor]:
         observation = self.dataset[self.sequence_index]
         self.sequence_index += 1
+        if self.sequence_index >= len(self.dataset):
+            self.sequence_index = 0
+
+        for key, value in observation.items():
+            if "image" not in key:
+                print(key, value)
+            else:
+                print(key, value.shape)
         return observation
 
     def send_action(self, action: dict):
-        self.robot.send_action(action)
+        print("action: ", action["action"])
