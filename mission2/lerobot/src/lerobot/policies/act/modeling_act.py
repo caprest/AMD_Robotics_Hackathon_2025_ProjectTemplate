@@ -38,6 +38,8 @@ from lerobot.policies.pretrained import PreTrainedPolicy
 from lerobot.utils.constants import ACTION, OBS_ENV_STATE, OBS_IMAGES, OBS_STATE
 
 
+NUM_CLASSES: int = 8
+
 class ACTPolicy(PreTrainedPolicy):
     """
     Action Chunking Transformer Policy as per Learning Fine-Grained Bimanual Manipulation with Low-Cost
@@ -342,7 +344,7 @@ class ACT(nn.Module):
             )
         if self.config.env_state_feature:
             self.encoder_env_state_input_proj = nn.Linear(
-                self.config.env_state_feature.shape[0], config.dim_model
+                self.config.env_state_feature.shape[0] * NUM_CLASSES, config.dim_model
             )
         self.encoder_latent_input_proj = nn.Linear(config.latent_dim, config.dim_model)
         if self.config.image_features:
@@ -462,7 +464,10 @@ class ACT(nn.Module):
             encoder_in_tokens.append(self.encoder_robot_state_input_proj(batch[OBS_STATE]))
         # Environment state token.
         if self.config.env_state_feature:
-            encoder_in_tokens.append(self.encoder_env_state_input_proj(batch[OBS_ENV_STATE]))
+            env_state = batch[OBS_ENV_STATE].reshape(-1)
+            env_state = torch.nn.functional.one_hot(env_state.to(torch.int64), NUM_CLASSES).float()
+            encoder_in_tokens.append(self.encoder_env_state_input_proj(env_state))
+            #  encoder_in_tokens.append(self.encoder_env_state_input_proj(batch[OBS_ENV_STATE]))
 
         if self.config.image_features:
             # For a list of images, the H and W may vary but H*W is constant.
