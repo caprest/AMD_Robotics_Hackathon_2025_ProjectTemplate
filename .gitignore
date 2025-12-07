@@ -86,3 +86,6 @@ htmlcov/
 *.bak
 *.tmp
 .cache/
+
+
+mission2/code/scripts
