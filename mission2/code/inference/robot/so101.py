@@ -48,9 +48,9 @@ def _postprocess_observation(obs: dict) -> dict:
     # obs["observation.images.stand"] = np.array(
     #     obs[So101CameraNames.STAND.value], dtype=np.float32
     # )
-    # obs["observation.images.light"] = np.array(
-    #     obs[So101CameraNames.LIGHT.value], dtype=np.float32
-    # )
+    obs["observation.images.light"] = np.array(
+        obs[So101CameraNames.LIGHT.value], dtype=np.float32
+    )
 
     # remove the motor names from the observation
     for motor_name in So101MotorPosNames:

@@ -1,28 +1,9 @@
 # 🎹 Teaching Robots to Play Piano with Imitation Learning
 
-> *"Any sufficiently advanced technology is indistinguishable from magic."* — Arthur C. Clarke
-
 A vision-based robotic piano player powered by **Action Chunking Transformer (ACT)** and the **SO101 robotic arm**. We trained a robot to play Christmas carols using imitation learning — because why should humans have all the fun?
 
----
-
-## 🎬 Demo
-
-Watch our robot play **Jingle Bells** 🎄
-
-https://github.com/user-attachments/assets/YOUR_VIDEO_HERE
-
----
 
 ## 🚀 What We Built
-
-We created an end-to-end pipeline that enables a 6-DOF robotic arm to play piano by:
-
-1. **Learning from human demonstrations** — We teleoperated the robot to play piano keys and recorded the demonstrations
-2. **Training an ACT policy** — Using the LeRobot framework, we trained a transformer-based imitation learning model
-3. **Real-time inference** — The robot reads sheet music and plays notes in real-time using vision feedback
-
-### The Magic ✨
 
 - **Sheet Music Parser** — Converts musical scores (notes + durations) into time-synchronized commands
 - **Vision-Guided Control** — Camera observations enable precise key targeting
@@ -90,22 +71,6 @@ We created an end-to-end pipeline that enables a 6-DOF robotic arm to play piano
 
 ---
 
-## 📦 Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/YOUR_REPO/robo-maestro.git
-cd robo-maestro
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install LeRobot
-pip install lerobot
-```
-
----
-
 ## 🎮 Usage
 
 ### Prepare
@@ -114,20 +79,35 @@ Please prepare conda env:
 conda activate lerobot
 ```
 
-### Run with Real Robot
+### Run Modes
+
+Since we only had **one physical robot**, we created three execution modes to enable parallel development between the data collection team and the deployment team.
+
+| Mode | Command | Description |
+|------|---------|-------------|
+| **so101** | `python -m inference.main so101` | Run inference on the real robot |
+| **sim** | `python -m inference.main sim` | Load observations from dataset, execute actions on real robot |
+| **dummy** | `python -m inference.main dummy` | Test inference pipeline without robot connection |
+
+#### 🤖 `so101` — Real Robot Mode
 ```bash
 python -m inference.main so101
 ```
+Connects to the physical SO101 robot and runs inference with real-time camera observations.
 
-### Run in Simulation Mode
+#### 🎬 `sim` — Simulation Mode  
 ```bash
 python -m inference.main sim
 ```
+Loads observation data from a pre-collected dataset on HuggingFace Hub, but executes actions on the real robot.  
+**Use case**: While one team was collecting training data, the deployment team could validate policy behavior using previously recorded observations.
 
-### Run in Dummy Mode (for testing)
+#### 🧪 `dummy` — Dummy Mode
 ```bash
 python -m inference.main dummy
 ```
+Runs the entire inference pipeline without any physical robot connection. Observations come from the dataset, and actions are only logged (not executed).  
+**Use case**: Enabled software debugging and feature development even when the robot was occupied for data collection.
 
 ---
 
@@ -147,14 +127,7 @@ JingleBells = [
 
 The `Sheet` class converts these into frame-synchronized note commands at 30 FPS.
 
-### 2. ACT Policy
-We use the **Action Chunking Transformer** architecture from [ACT: Adaptive Chunking Transformer](https://arxiv.org/abs/2304.13705):
-
-- **Input**: Camera image + robot joint states + current note
-- **Output**: 6-DOF action (shoulder pan, shoulder lift, elbow flex, wrist flex, wrist roll, gripper)
-- **Training**: Behavior cloning on ~50 human demonstrations
-
-### 3. Inference Pipeline
+### 2. Inference Pipeline
 ```python
 while playing:
     note = sheet.tick_note()           # Get current note from score
@@ -163,41 +136,22 @@ while playing:
     robot.send_action(action)           # Execute on robot
 ```
 
----
 
-## 📊 Results
+## 🔮 Future Work
 
-| Metric | Value |
-|--------|-------|
-| Training Episodes | 50 |
-| Training Time | ~2 hours |
-| Inference FPS | 30 |
-| Success Rate | 85%+ key hits |
+### Real-Time Chunking (RTC)
+
+We originally planned to integrate **Real-Time Chunking (RTC)** to improve the responsiveness and smoothness of our robot's piano playing. RTC enables more reactive control by processing action chunks in real-time, reducing latency between observation and execution.
+
+We had prepared to clone and adapt this as `lrbt043`, but due to time constraints during the hackathon, we were unable to implement it.
+
+**Expected benefits:**
+- Lower latency between note changes and robot response
+- Smoother transitions between consecutive key presses
+- Better temporal alignment with the sheet music tempo
 
 ---
 
 ## 👥 Team
 
-Built with ❤️ and ☕ at **AMD Hackathon 2025**
-
----
-
-## 🙏 Acknowledgments
-
-- [Hugging Face LeRobot](https://github.com/huggingface/lerobot) — For the amazing robotics framework
-- [ACT Paper](https://arxiv.org/abs/2304.13705) — For the policy architecture
-- AMD — For the GPU compute power 🔥
-
----
-
-## 📄 License
-
-MIT License — Feel free to teach more robots to make music! 🎶
-
----
-
-<p align="center">
-  <b>🤖 + 🎹 = 🎵</b><br>
-  <i>Making robots musical, one key at a time.</i>
-</p>
-
+Developed during **AMD Hackathon 2025**
