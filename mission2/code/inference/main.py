@@ -73,7 +73,9 @@ def run_keyboard_mode(stdscr, args):
     """Run with keyboard input (curses mode)."""
     stdscr.clear()
     stdscr.addstr(0, 0, f"Running in mode: {args.mode}")
-    stdscr.addstr(1, 0, "🎮 Keyboard mode - Press 'e' for C→E, 'g' for C→G, 'q' to quit")
+    stdscr.addstr(
+        1, 0, "🎮 Keyboard mode - Press 'e' for C→E, 'g' for C→G, 'q' to quit"
+    )
     stdscr.refresh()
 
     robot = setup_robot(args.mode)
@@ -82,7 +84,9 @@ def run_keyboard_mode(stdscr, args):
     policy = setup_policy()
     keyboard = KeyboardState(stdscr)
 
-    pipeline = InferencePipeline(robot, policy, sheet=None, keyboard=keyboard, stdscr=stdscr)
+    pipeline = InferencePipeline(
+        robot, policy, sheet=None, keyboard=keyboard, stdscr=stdscr
+    )
     pipeline.run()
 
     stdscr.addstr(10, 0, "🤖 Disconnecting robot...")
