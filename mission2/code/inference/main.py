@@ -48,7 +48,7 @@ def setup_policy():
     print("🧭 Loading policy...")
     return ActPolicy(
         {
-            TransitionType.C_TO_C: "abemii/act_so101_cmaj_scale_dataset_v8_CC_move_005000_amd_cloud",
+            TransitionType.C_TO_C: "abemii/act_so101_cmaj_scale_dataset_v8_CC_move_010000_amd_cloud",
             TransitionType.C_TO_E: "abemii/act_so101_cmaj_scale_dataset_v8_CE_move_010000_amd_cloud",
             TransitionType.C_TO_G: "abemii/act_so101_cmaj_scale_dataset_v8_CG_move_010000_amd_cloud",
         }
