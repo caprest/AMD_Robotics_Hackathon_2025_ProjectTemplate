@@ -1,0 +1,20 @@
+{
+  "arm": {
+    "index_or_path": 6,
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  },
+  "stand": {
+    "index_or_path": 8,
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  },
+  "light": {
+    "index_or_path": 4,
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  }
+}
