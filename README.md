@@ -17,7 +17,7 @@
 * [Final demo movie](https://drive.google.com/file/d/1HN9aKQeYuQTmch-KUtDdh7sH6mAQvz4t/view?usp=sharing)
 * [Reference demo(Teleoperated)](media/target_demo.mp4) we aimed to achieve. 
 
-* Below are TELEOPERATED DEMO to show the concept.
+* Below is a TELEOPERATED DEMO to show the concept.
 
 <video src="media/target_demo.mp4" controls loop autoplay ></video>
 
