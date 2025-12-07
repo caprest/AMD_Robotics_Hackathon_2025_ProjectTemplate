@@ -113,14 +113,16 @@ class Sheet:
 
         Returns:
             int | None: note number at the current frame, or None when
-            `frame >= total_array_length`. The time is computed from
-            the moment start() was called.
+            `frame >= total_array_length`. The frame is computed from
+            elapsed time since start() was called.
         """
-        self.sequence_number += 1
-        if self.sequence_number >= self.total_array_length:
+        elapsed = self._elapsed_time()
+        frame = int(elapsed * self.FPS)
+
+        if frame >= self.total_array_length:
             return None
 
-        return int(self.array[self.sequence_number])
+        return int(self.array[frame])
 
 
 if __name__ == "__main__":
