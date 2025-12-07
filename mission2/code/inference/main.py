@@ -42,10 +42,7 @@ def main():
     print("🧭 Loading policy...")
     policy = ActPolicy(
         {
-            "z": "abemii/act_so101_cmaj_scale_datset_v6_G_010000_amd_cloud",
-            "C4": "abemii/act_so101_cmaj_scale_datset_v6_G_010000_amd_cloud",
-            "E4": "abemii/act_so101_cmaj_scale_datset_v6_G_010000_amd_cloud",
-            "G4": "abemii/act_so101_cmaj_scale_datset_v6_G_010000_amd_cloud",
+            None: "abemii/act_so101_cmaj_scale_datset_v6_G_010000_amd_cloud",
         }
     )
 

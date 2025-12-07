@@ -19,7 +19,7 @@ def count_total_duration_in_eigth_notes(score: Score) -> int:
 class Sheet:
     # Timing configuration
     BPM = 10
-    FPS = 27
+    FPS = 30
 
     # Frame-based layout
     NOTE_DURATION = 60
@@ -29,7 +29,10 @@ class Sheet:
 
     def __init__(self, scores: Score | None = None) -> None:
         # Use provided score or default to JingleBells
-        self.scores: Score = TestSequence
+        self.scores: Score = scores if scores is not None else JingleBells
+
+        # Timing state
+        self._start_time: float | None = None
 
         # --- duration / timing ---
         self.total_duration_in_eighth_notes: int = count_total_duration_in_eigth_notes(
@@ -99,7 +102,14 @@ class Sheet:
     def start(self) -> None:
         """Begin playback timing."""
         print("🎼 Starting sheet...")
+        self._start_time = time.time()
         self.sequence_number = 0
+
+    def _elapsed_time(self) -> float:
+        """Return elapsed time since start() was called, or 0 if not started."""
+        if self._start_time is None:
+            return 0.0
+        return time.time() - self._start_time
 
     def tick_note(self) -> int | None:
         """
