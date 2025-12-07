@@ -11,7 +11,7 @@
 
 * We developed a model to play the piano using the SO101 arm.
 * Final demo movie: [TODO]
-* Reference demo we aimed to achieve: 
+* [Reference demo](media/target_demo.mp4) we aimed to achieve. 
 
 
 <video src="media/target_demo.mp4" controls loop autoplay ></video>
@@ -60,7 +60,7 @@ This model accepts a conditional vector representing the "intention of pressing 
     - We used AMD Cloud for training.
 - *Inference*
     - The inference script accepts musical score data and controls the robot by switching intention vectors accordingly.
-    - Detailed documentation is provided under [mission2/code/inference/README.md](here).
+    - Detailed documentation is provided under [here](mission2/code/inference/README.md).
 
 ### 3.2 Explicit State Transition Modeling
 * Due to the limited state memory in the ACT model, we later adopted explicit state modeling to execute the task. We then trained models to handle each sub-policy.
@@ -73,6 +73,7 @@ This model accepts a conditional vector representing the "intention of pressing 
 
 - *Teleoperation / Dataset Capture*
     - We captured the action of each sub-policy.
+    - We futher varied the piano position to achieve better generalization, especially for camera.
 - *Training*
     - We trained an ACT model for each sub-policy.
     - We only used the fingertip camera to reduce training difficulty.
@@ -81,7 +82,7 @@ This model accepts a conditional vector representing the "intention of pressing 
 
 ### 3.3 Simple Two-Sound Model (Our Final Submission)
 
-Due to generalization difficulties, we narrowed down the sub-policies to three models:
+Due to generalization difficulties, we further narrowed down the sub-policies to three models:
 - **C-E policy**: Plays C, then E, and returns to the C position.
 - **C-G policy**: Plays C, then G, and returns to the C position.
 - **C-C policy**: Plays C and returns to the C position.
