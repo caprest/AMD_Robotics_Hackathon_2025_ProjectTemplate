@@ -14,11 +14,12 @@
 **Summary:**
 
 * We developed a model to play the piano using the SO101 arm.
-* [Final demo movie](media/demo.mp4)
-* [Reference demo](media/target_demo.mp4) we aimed to achieve. 
+* [Final demo movie](https://drive.google.com/file/d/1HN9aKQeYuQTmch-KUtDdh7sH6mAQvz4t/view?usp=sharing)
+* [Reference demo(Teleoperated)](media/target_demo.mp4) we aimed to achieve. 
 
+* Below are TELEOPERATED DEMO to show the concept.
 
-<video src="media/demo.mp4" controls loop autoplay ></video>
+<video src="media/target_demo.mp4" controls loop autoplay ></video>
 
 
 ## Submission Details
