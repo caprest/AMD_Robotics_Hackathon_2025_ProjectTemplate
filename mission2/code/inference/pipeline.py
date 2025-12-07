@@ -90,6 +90,11 @@ class InferencePipeline(object):
                 else:
                     note = None
 
+            # Skip rest notes BEFORE getting observation
+            if note is None or note == "z" or note == 0:
+                self._log(4, "⏸️ Skipping (no note)")
+                continue
+
             observation = self.robot.get_observation()
 
             note_name = note.name if hasattr(note, "name") else str(note)
