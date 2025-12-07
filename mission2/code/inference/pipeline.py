@@ -83,19 +83,22 @@ class InferencePipeline(object):
                 else:
                     note = None
 
-            self._log(4, f"note: {note}")
+            self._log(4, f"note: {note} (type: {type(note).__name__})")
+
+            # Skip rest notes ("z" or 0)
+            if note is None or note == "z" or note == 0:
+                self._log(5, "⏸️ Skipping rest note")
+                continue
 
             observation = self.robot.get_observation()
 
-            if note is None:
-                continue
-
+            self._log(5, f"🎯 Calling policy with note: {note}")
             action = self.policy.inference(observation, note)
             if action is None:
-                self._log(5, f"No action for note: {note}")
+                self._log(6, f"❌ No action returned for note: {note}")
                 continue
 
-            self._log(5, f"action: executing...")
+            self._log(6, f"✅ Action received, sending to robot...")
             action_dict = _postprocess_action(action)
             self.robot.send_action(action_dict)
             self.robot.on_end_of_frame()

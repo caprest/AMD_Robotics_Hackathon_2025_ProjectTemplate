@@ -1,15 +1,18 @@
-from .policy.const import TransitionType
-from .sheet.keyboard import KeyboardState
-from .sheet.scores import TrasitionSequence
-from .dataset.dataset import Dataset
-from .robot.so101 import So101Robot
-from .pipeline import InferencePipeline
-from .policy.act import ActPolicy
-from .sheet.sheet import Sheet
-from .robot.sim import SimRobot
-from .robot.dummy import DummyRobot
 import argparse
 import curses
+import os
+import sys
+
+from .dataset.dataset import Dataset
+from .pipeline import InferencePipeline
+from .policy.act import ActPolicy
+from .policy.const import TransitionType
+from .robot.dummy import DummyRobot
+from .robot.sim import SimRobot
+from .robot.so101 import So101Robot
+from .sheet.keyboard import KeyboardState
+from .sheet.scores import TrasitionSequence
+from .sheet.sheet import Sheet
 
 
 def parse_args():
@@ -45,8 +48,8 @@ def setup_policy():
     print("🧭 Loading policy...")
     return ActPolicy(
         {
-            TransitionType.C_TO_E: "abemii/act_so101_cmaj_scale_dataset_v8_CE_move_005000_amd_cloud",
-            TransitionType.C_TO_G: "abemii/act_so101_cmaj_scale_dataset_v8_CE_move_005000_amd_cloud",
+            TransitionType.C_TO_E: "abemii/act_so101_cmaj_scale_dataset_v8_CE_move_010000_amd_cloud",
+            TransitionType.C_TO_G: "abemii/act_so101_cmaj_scale_dataset_v8_CG_move_005000_amd_cloud",
         }
     )
 
@@ -100,6 +103,8 @@ def main():
     if args.input_mode == "sheet":
         run_sheet_mode(args)
     elif args.input_mode == "keyboard":
+        sys.stdout = open(os.devnull, "w")
+        sys.stderr = open(os.devnull, "w")
         curses.wrapper(lambda stdscr: run_keyboard_mode(stdscr, args))
     else:
         raise ValueError(f"Invalid input mode: {args.input_mode}")

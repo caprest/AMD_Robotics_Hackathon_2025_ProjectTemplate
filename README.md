@@ -97,26 +97,11 @@ By combining these three models, we can play any song using C-E-G notes!
 
 ### 4. Ease of Use
 
-**Generalizability across tasks and environments:**
-- **Minimal setup requirements**: The system does not require explicit calibration of cameras or precise arm positioning. Simply collect some training data in your environment, and the model generalizes to similar setups.
-- **Adaptable to different piano placements**: Thanks to our multi-camera vision system and variability-aware training approach, the robot can handle slight variations in piano position and orientation without retraining.
-- **Transferable approach**: While demonstrated on piano playing, the conditional vector methodology and sub-policy decomposition can be adapted to other sequential manipulation tasks.
+**Simplified setup**: Unlike traditional robotic systems requiring precise calibration and coordinate mapping, our learning-based approach only needs demonstration data collection via teleoperation. While retraining is required for new environments, this is far more accessible than programming explicit trajectories.
 
-**Flexibility and adaptability:**
-- **Dual operation modes**: Switch seamlessly between teleoperation mode (manual control for interactive demonstrations) and sheet mode (autonomous playback from musical scores).
-- **Hierarchical model options**: Our implementation provides three levels of complexity—from fully conditioned models to explicit state transition models—allowing users to choose based on their performance requirements and computational resources.
-- **Simple input format**: Accepts standard musical notation, making it accessible to users without programming expertise.
+**Dual operation modes**: Teleoperation mode allows manual triggering of C-E, C-G, or C-C sequences with keyboard commands, while sheet mode automatically plays songs from text-based music score files.
 
-**Control interfaces:**
-- **Music sheet input**: Provide a music score file, and the system automatically executes the sequence.
-- **Keyboard commands**: In teleoperation mode, use simple keyboard commands to trigger specific note sequences (C-E, C-G, C-C).
-- **Python API**: For advanced users, the inference pipeline can be controlled programmatically through Python scripts (see `mission2/code/inference/` for documentation).
-
-**Quick start:**
-1. Record demonstration data in your environment (no precise calibration needed)
-2. Train the model using AMD Cloud
-3. Run inference with either music sheet or manual control
-4. Enjoy your robot pianist!
+**Quick start**: Collect demonstration data → Train three ACT models on AMD Cloud → Run inference and enjoy your robot pianist!
 
 
 ## Additional Links

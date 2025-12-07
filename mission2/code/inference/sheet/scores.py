@@ -18,7 +18,6 @@ NOTE_TO_NUMBER = {
 }
 
 TestSequence = [  # Note: 8th note (duration=1)
-    (None, 2),
     ("C4", 2),
     ("E4", 2),
     ("G4", 2),
@@ -27,7 +26,6 @@ TestSequence = [  # Note: 8th note (duration=1)
 ]
 
 TrasitionSequence = [
-    (None, 2),
     (TransitionType.C_TO_E, 2),
     (TransitionType.C_TO_G, 2),
     (TransitionType.C_TO_E, 2),

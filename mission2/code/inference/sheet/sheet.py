@@ -22,7 +22,7 @@ class Sheet:
     FPS = 30
 
     # Frame-based layout
-    NOTE_DURATION = 90
+    NOTE_DURATION = 210
     PRE_OFFSET = BPM * 1
     POST_OFFSET = BPM * 6
 

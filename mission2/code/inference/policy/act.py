@@ -30,12 +30,9 @@ class ActPolicy:
             return None
 
         if self.prev_note != note:
-            # note: we use single model for all notes right now, so we don't need to reset
-            # self.note_to_policy[note].reset()
-            pass
+            self.note_to_policy[note].reset()
 
         self.prev_note = note
-        self.prev_policy = self.note_to_policy[note]
 
         preprocessor = self.note_to_preprocessor[note]
         postprocessor = self.note_to_postprocessor[note]
