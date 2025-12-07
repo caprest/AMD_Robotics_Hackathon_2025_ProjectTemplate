@@ -118,7 +118,3 @@ By combining these three models, we can play any song using C-E-G notes!
 **Quick start**: Collect demonstration data → Train three ACT models on AMD Cloud → Run inference and enjoy your robot pianist!
 
 
-## Additional Links
-
-## Code submission
-
