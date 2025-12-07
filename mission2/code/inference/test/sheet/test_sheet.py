@@ -38,7 +38,7 @@ class TestSheet(unittest.TestCase):
 
     def test_initialization_with_custom_scores(self):
         custom_score = [("C4", 2), ("D4", 2)]
-        sheet = Sheet(scores=custom_score)
+        sheet = Sheet(score=custom_score)
         self.assertEqual(sheet.scores, custom_score)
         self.assertEqual(sheet.total_duration_in_eighth_notes, 4)
 

@@ -30,6 +30,7 @@ from lerobot.processor import (
     ProcessorStepRegistry,
     RenameObservationsProcessorStep,
     TokenizerProcessorStep,
+    TransitionKey,
     UnnormalizerProcessorStep,
 )
 from lerobot.processor.converters import policy_action_to_transition, transition_to_policy_action
@@ -69,20 +70,71 @@ def make_smolvla_pre_post_processors(
     input_steps = [
         RenameObservationsProcessorStep(rename_map={}),  # To mimic the same processor as pretrained one
         AddBatchDimensionProcessorStep(),
-        SmolVLANewLineProcessor(),
-        TokenizerProcessorStep(
-            tokenizer_name=config.vlm_model_name,
-            padding=config.pad_language_to,
-            padding_side="right",
-            max_length=config.tokenizer_max_length,
-        ),
-        DeviceProcessorStep(device=config.device),
-        NormalizerProcessorStep(
-            features={**config.input_features, **config.output_features},
-            norm_map=config.normalization_mapping,
-            stats=dataset_stats,
-        ),
     ]
+
+    if config.fixed_language_instruction:
+        input_steps.append(
+            SmolVLAFixedTaskProcessor(fixed_instruction=config.fixed_language_instruction)
+        )
+
+    input_steps.extend(
+        [
+            SmolVLANewLineProcessor(),
+            TokenizerProcessorStep(
+                tokenizer_name=config.vlm_model_name,
+                padding=config.pad_language_to,
+                padding_side="right",
+                max_length=config.tokenizer_max_length,
+            ),
+            DeviceProcessorStep(device=config.device),
+            NormalizerProcessorStep(
+                features={**config.input_features, **config.output_features},
+                norm_map=config.normalization_mapping,
+                stats=dataset_stats,
+            ),
+        ]
+    )
+    @ProcessorStepRegistry.register(name="smolvla_fixed_task_processor")
+    class SmolVLAFixedTaskProcessor(ComplementaryDataProcessorStep):
+        """Processor step forcing a fixed instruction.
+
+        Useful when the dataset lacks language annotations or when a constant
+        instruction should override per-sample prompts.
+        """
+
+        def __init__(self, fixed_instruction: str):
+            if not fixed_instruction:
+                raise ValueError("`fixed_instruction` must be a non-empty string.")
+            self.fixed_instruction = fixed_instruction
+
+        def complementary_data(self, complementary_data):
+            batch_size = self._infer_batch_size(complementary_data)
+            new_data = dict(complementary_data)
+            if batch_size == 1:
+                new_data["task"] = self.fixed_instruction
+            else:
+                new_data["task"] = [self.fixed_instruction] * batch_size
+            return new_data
+
+        def _infer_batch_size(self, complementary_data: dict[str, Any]) -> int:
+            task_value = complementary_data.get("task")
+            if isinstance(task_value, list):
+                return len(task_value)
+            if isinstance(task_value, str):
+                return 1
+
+            observation = self.transition.get(TransitionKey.OBSERVATION) or {}
+            for value in observation.values():
+                if isinstance(value, torch.Tensor):
+                    return value.shape[0]
+
+            raise ValueError("Unable to infer batch size when overriding SmolVLA instructions.")
+
+        def transform_features(
+            self, features: dict[PipelineFeatureType, dict[str, PolicyFeature]]
+        ) -> dict[PipelineFeatureType, dict[str, PolicyFeature]]:
+            return features
+
     output_steps = [
         UnnormalizerProcessorStep(
             features=config.output_features, norm_map=config.normalization_mapping, stats=dataset_stats

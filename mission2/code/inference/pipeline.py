@@ -2,8 +2,9 @@ from .robot.const import So101MotorPosNames
 from .robot.base import BaseRobot
 from .policy.act import ActPolicy
 from .sheet.sheet import Sheet
+from .sheet.keyboard import KeyboardState
 import torch
-import tqdm
+from .policy.const import TransitionType
 
 
 def _postprocess_action(action: torch.Tensor) -> dict:
@@ -23,37 +24,78 @@ class InferencePipeline(object):
         self,
         robot: BaseRobot,
         policy: ActPolicy,
-        sheet: Sheet,
+        sheet: Sheet | None,
+        keyboard: KeyboardState | None,
+        stdscr=None,
     ):
         self.robot = robot
         self.policy = policy
+        self.stdscr = stdscr
+
         self.sheet = sheet
+        if self.sheet is not None:
+            self.sheet.start()
+
+        self.keyboard = keyboard
+
+        if self.sheet is None and self.keyboard is None:
+            raise ValueError("Either sheet or keyboard must be provided")
+
+    def _log(self, row: int, msg: str):
+        """Output message - uses curses if available, otherwise print."""
+        if self.stdscr is not None:
+            self.stdscr.addstr(row, 0, msg.ljust(60))
+            self.stdscr.refresh()
+        else:
+            print(msg)
 
     def run(self):
-        print("🏃‍♀️ Running inference pipeline...")
+        self._log(2, "🏃‍♀️ Running inference pipeline...")
 
-        self.sheet.start()
         _iter = 0
         while True:
-            print("iter: ", _iter)
-            _iter += 1
+            if self.keyboard is not None:
+                self.keyboard.clear()
+                self.keyboard.poll()
 
-            note_num = self.sheet.tick_note()
-            if note_num is None:
-                print("🎼 Sheet ended")
-                break
-            note = self.sheet.number_to_note(note_num)
-            print("note:", note)
-            if note is None:
-                # DO NOTHING!
-                continue
+                # Check for quit
+                if self.keyboard.is_pressed("q"):
+                    self._log(8, "👋 Quit requested")
+                    break
+
+            _iter += 1
+            self._log(3, f"iter: {_iter}")
+
+            note = None
+
+            if self.sheet is not None:
+                note_num = self.sheet.tick_note()
+                if note_num is None:
+                    self._log(8, "🎼 Sheet ended")
+                    break
+                note = self.sheet.number_to_note(note_num)
+
+            if self.keyboard is not None:
+                if self.keyboard.is_pressed("e"):
+                    note = TransitionType.C_TO_E
+                elif self.keyboard.is_pressed("g"):
+                    note = TransitionType.C_TO_G
+                else:
+                    note = None
+
+            self._log(4, f"note: {note}")
 
             observation = self.robot.get_observation()
-            action = self.policy.inference(observation, note)
-            if action is None:
-                print(f"No action for note: {note}")
+
+            if note is None:
                 continue
 
+            action = self.policy.inference(observation, note)
+            if action is None:
+                self._log(5, f"No action for note: {note}")
+                continue
+
+            self._log(5, f"action: executing...")
             action_dict = _postprocess_action(action)
             self.robot.send_action(action_dict)
             self.robot.on_end_of_frame()

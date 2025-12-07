@@ -1,3 +1,5 @@
+from ..policy.const import TransitionType
+
 NOTE_TO_NUMBER = {
     None: -1,
     "z": 0,
@@ -11,6 +13,8 @@ NOTE_TO_NUMBER = {
     "A4": 8,
     "B4": 9,
     "C5": 10,
+    TransitionType.C_TO_E: 11,
+    TransitionType.C_TO_G: 12,
 }
 
 TestSequence = [  # Note: 8th note (duration=1)
@@ -26,6 +30,20 @@ TestSequence = [  # Note: 8th note (duration=1)
     ("z", 2),
     ("C4", 2),
     ("z", 2),
+]
+
+TrasitionSequence = [
+    (None, 2),
+    (TransitionType.C_TO_E, 2),
+    (TransitionType.C_TO_G, 2),
+    (TransitionType.C_TO_E, 2),
+    (TransitionType.C_TO_G, 2),
+    (TransitionType.C_TO_E, 2),
+    (TransitionType.C_TO_G, 2),
+    (TransitionType.C_TO_E, 2),
+    (TransitionType.C_TO_G, 2),
+    (TransitionType.C_TO_E, 2),
+    (TransitionType.C_TO_G, 2),
 ]
 
 JingleBells = [  # Note: 8th note (duration=1)

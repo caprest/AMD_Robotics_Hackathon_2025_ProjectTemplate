@@ -60,6 +60,7 @@ class SmolVLAConfig(PreTrainedConfig):
 
     # Tokenizer
     tokenizer_max_length: int = 48
+    fixed_language_instruction: str | None = None  # Optional fixed instruction overriding dataset tasks.
 
     # Decoding
     num_steps: int = 10

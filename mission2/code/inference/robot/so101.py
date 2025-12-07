@@ -45,9 +45,9 @@ def _postprocess_observation(obs: dict) -> dict:
     obs["observation.images.arm"] = np.array(
         obs[So101CameraNames.ARM.value], dtype=np.float32
     )
-    # obs["observation.images.stand"] = np.array(
-    #     obs[So101CameraNames.STAND.value], dtype=np.float32
-    # )
+    obs["observation.images.stand"] = np.array(
+        obs[So101CameraNames.STAND.value], dtype=np.float32
+    )
     obs["observation.images.light"] = np.array(
         obs[So101CameraNames.LIGHT.value], dtype=np.float32
     )

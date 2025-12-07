@@ -5,7 +5,7 @@ from collections.abc import Sequence
 
 import numpy as np
 
-from .scores import NOTE_TO_NUMBER, JingleBells, TestSequence
+from .scores import NOTE_TO_NUMBER
 
 
 Score = Sequence[tuple[str, int]]
@@ -22,14 +22,13 @@ class Sheet:
     FPS = 30
 
     # Frame-based layout
-    NOTE_DURATION = 60
-    REWIND = 15
-    PRE_OFFSET = REWIND * 2
+    NOTE_DURATION = 90
+    PRE_OFFSET = BPM * 1
     POST_OFFSET = BPM * 6
 
-    def __init__(self, scores: Score | None = None) -> None:
+    def __init__(self, score: Score) -> None:
         # Use provided score or default to JingleBells
-        self.scores: Score = scores if scores is not None else JingleBells
+        self.scores: Score = score
 
         # Timing state
         self._start_time: float | None = None
@@ -69,10 +68,7 @@ class Sheet:
 
         # Total length of the sheet array
         self.total_array_length: int = (
-            self.PRE_OFFSET
-            + self.POST_OFFSET
-            + self.REWIND
-            + self.total_frames_for_notes
+            self.PRE_OFFSET + self.POST_OFFSET + self.total_frames_for_notes
         )
 
     def _build_array(self) -> np.ndarray:
@@ -84,7 +80,7 @@ class Sheet:
             frames_for_note = duration_eighths * self.frames_per_eighth
 
             if note != "z":
-                number = NOTE_TO_NUMBER[note]
+                number = NOTE_TO_NUMBER.get(note, -1)
                 end_index = min(cur_index + self.NOTE_DURATION, self.total_array_length)
                 arr[cur_index:end_index] = number
 

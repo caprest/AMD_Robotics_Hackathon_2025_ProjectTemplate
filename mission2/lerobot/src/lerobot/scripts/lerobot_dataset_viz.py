@@ -75,7 +75,7 @@ import torch.utils.data
 import tqdm
 
 from lerobot.datasets.lerobot_dataset import LeRobotDataset
-from lerobot.utils.constants import ACTION, DONE, OBS_STATE, REWARD
+from lerobot.utils.constants import ACTION, DONE, OBS_STATE, REWARD, OBS_ENV_STATE
 
 
 class EpisodeSampler(torch.utils.data.Sampler):
@@ -165,6 +165,9 @@ def visualize_dataset(
             if OBS_STATE in batch:
                 for dim_idx, val in enumerate(batch[OBS_STATE][i]):
                     rr.log(f"state/{dim_idx}", rr.Scalars(val.item()))
+
+            if OBS_ENV_STATE in batch:
+                rr.log("env_state", rr.Scalars(batch[OBS_ENV_STATE][i].item()))
 
             if DONE in batch:
                 rr.log(DONE, rr.Scalars(batch[DONE][i].item()))

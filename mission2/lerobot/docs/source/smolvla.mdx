@@ -65,6 +65,10 @@ cd lerobot && lerobot-train \
   --wandb.enable=true
 ```
 
+Need to fine-tune on data that lacks language annotations or want to enforce a constant prompt? Pass
+`--policy.fixed_language_instruction="Grasp the blue cube."` and the tokenizer will always receive that
+instruction regardless of the dataset metadata.
+
 <Tip>
   You can start with a small batch size and increase it incrementally, if the
   GPU allows it, as long as loading times remain short.
