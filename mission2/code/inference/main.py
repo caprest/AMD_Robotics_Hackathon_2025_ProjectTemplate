@@ -48,8 +48,9 @@ def setup_policy():
     print("🧭 Loading policy...")
     return ActPolicy(
         {
+            TransitionType.C_TO_C: "abemii/act_so101_cmaj_scale_dataset_v8_CC_move_005000_amd_cloud",
             TransitionType.C_TO_E: "abemii/act_so101_cmaj_scale_dataset_v8_CE_move_010000_amd_cloud",
-            TransitionType.C_TO_G: "abemii/act_so101_cmaj_scale_dataset_v8_CG_move_005000_amd_cloud",
+            TransitionType.C_TO_G: "abemii/act_so101_cmaj_scale_dataset_v8_CG_move_010000_amd_cloud",
         }
     )
 
@@ -77,7 +78,9 @@ def run_keyboard_mode(stdscr, args):
     stdscr.clear()
     stdscr.addstr(0, 0, f"Running in mode: {args.mode}")
     stdscr.addstr(
-        1, 0, "🎮 Keyboard mode - Press 'e' for C→E, 'g' for C→G, 'q' to quit"
+        1,
+        0,
+        "🎮 c=C→C, e=C→E, g=C→G, SPACE=stop, q=quit (keys are sticky!)",
     )
     stdscr.refresh()
 

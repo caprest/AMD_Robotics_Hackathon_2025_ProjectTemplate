@@ -114,16 +114,6 @@ for tone_info in data_list:
         # new_flags に書き込む
         new_flags[fill_local_indices] = tone_num
 
-    if skip_episodes:
-        episode_indices = [i - 1 for i in skip_episodes]  # 0-based index
-        # drop the first episode
-        dataset = delete_episodes(
-            dataset=dataset,
-            episode_indices=episode_indices,  # 最初のepisodeを指定
-            output_dir=osp.join(
-                tmp_dir.name, name.replace("/", "_") + "_without_first_episode"
-            ),
-        )
     # 結果を dataset に追加する
     dataset = modify_features(
         dataset,
@@ -136,6 +126,16 @@ for tone_info in data_list:
         remove_features=["input.keyboard"],
         output_dir=osp.join(tmp_dir.name, name.replace("/", "_")),
     )
+    if skip_episodes:
+        episode_indices = [i - 1 for i in skip_episodes]  # 0-based index
+        # drop the first episode
+        dataset = delete_episodes(
+            dataset=dataset,
+            episode_indices=episode_indices,  # 最初のepisodeを指定
+            output_dir=osp.join(
+                tmp_dir.name, name.replace("/", "_") + "_without_first_episode"
+            ),
+        )
     dataset_concat_list.append(dataset)
 
 dataset_merged = merge_datasets(

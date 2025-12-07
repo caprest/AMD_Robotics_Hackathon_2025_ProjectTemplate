@@ -44,7 +44,10 @@ class InferencePipeline(object):
     def _log(self, row: int, msg: str):
         """Output message - uses curses if available, otherwise print."""
         if self.stdscr is not None:
-            self.stdscr.addstr(row, 0, msg.ljust(60))
+            # Clear the entire line first, then write the message
+            self.stdscr.move(row, 0)
+            self.stdscr.clrtoeol()
+            self.stdscr.addstr(row, 0, msg[:78])  # Limit to 78 chars to avoid line wrap
             self.stdscr.refresh()
         else:
             print(msg)
@@ -76,26 +79,24 @@ class InferencePipeline(object):
                 note = self.sheet.number_to_note(note_num)
 
             if self.keyboard is not None:
-                if self.keyboard.is_pressed("e"):
+                # Use sticky note key (persists until another note or space is pressed)
+                current_key = self.keyboard.get_current_note_key()
+                if current_key == "c":
+                    note = TransitionType.C_TO_C
+                elif current_key == "e":
                     note = TransitionType.C_TO_E
-                elif self.keyboard.is_pressed("g"):
+                elif current_key == "g":
                     note = TransitionType.C_TO_G
                 else:
                     note = None
 
-            self._log(4, f"note: {note} (type: {type(note).__name__})")
-
-            # Skip rest notes ("z" or 0)
-            if note is None or note == "z" or note == 0:
-                self._log(5, "⏸️ Skipping rest note")
-                continue
-
             observation = self.robot.get_observation()
 
-            self._log(5, f"🎯 Calling policy with note: {note}")
+            note_name = note.name if hasattr(note, "name") else str(note)
+            self._log(4, f"🎯 note: {note_name}")
             action = self.policy.inference(observation, note)
             if action is None:
-                self._log(6, f"❌ No action returned for note: {note}")
+                self._log(6, f"❌ No action: {note_name}")
                 continue
 
             self._log(6, f"✅ Action received, sending to robot...")
