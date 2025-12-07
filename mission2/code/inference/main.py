@@ -40,7 +40,14 @@ def main():
 
     # policy
     print("🧭 Loading policy...")
-    policy = ActPolicy("abemii/act_so101_cmaj_scale_datset_v2_005000_amd_cloud")
+    policy = ActPolicy(
+        {
+            "z": "abemii/act_so101_cmaj_scale_datset_v6_G_010000_amd_cloud",
+            "C4": "abemii/act_so101_cmaj_scale_datset_v6_G_010000_amd_cloud",
+            "E4": "abemii/act_so101_cmaj_scale_datset_v6_G_010000_amd_cloud",
+            "G4": "abemii/act_so101_cmaj_scale_datset_v6_G_010000_amd_cloud",
+        }
+    )
 
     # sheet
     sheet = Sheet()

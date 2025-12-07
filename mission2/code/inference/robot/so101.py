@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum
 
 import numpy as np
 import torch
@@ -9,22 +8,10 @@ from lerobot.robots.so101_follower import SO101Follower
 from lerobot.robots.so101_follower.config_so101_follower import SO101FollowerConfig
 from lerobot.robots.utils import make_robot_from_config
 
+
+from .logger import DebugLogger
 from .base import BaseRobot
-
-
-class So101MotorPosNames(Enum):
-    SHOULDER_PAN = "shoulder_pan.pos"
-    SHOULDER_LIFT = "shoulder_lift.pos"
-    ELBOW_FLEX = "elbow_flex.pos"
-    WRIST_FLEX = "wrist_flex.pos"
-    WRIST_ROLL = "wrist_roll.pos"
-    GRIPPER = "gripper.pos"
-
-
-class So101CameraNames(Enum):
-    ARM = "arm"
-    STAND = "stand"
-    LIGHT = "light"
+from .const import So101MotorPosNames, So101CameraNames
 
 
 @dataclass(frozen=True)
@@ -58,12 +45,12 @@ def _postprocess_observation(obs: dict) -> dict:
     obs["observation.images.arm"] = np.array(
         obs[So101CameraNames.ARM.value], dtype=np.float32
     )
-    obs["observation.images.stand"] = np.array(
-        obs[So101CameraNames.STAND.value], dtype=np.float32
-    )
-    obs["observation.images.light"] = np.array(
-        obs[So101CameraNames.LIGHT.value], dtype=np.float32
-    )
+    # obs["observation.images.stand"] = np.array(
+    #     obs[So101CameraNames.STAND.value], dtype=np.float32
+    # )
+    # obs["observation.images.light"] = np.array(
+    #     obs[So101CameraNames.LIGHT.value], dtype=np.float32
+    # )
 
     # remove the motor names from the observation
     for motor_name in So101MotorPosNames:
@@ -93,6 +80,8 @@ class So101Robot(BaseRobot):
 
         self.robot: SO101Follower = make_robot_from_config(config)
 
+        self.logger = DebugLogger()
+
     def connect(self):
         print("🤖 Connecting robot...")
         self.robot.connect()
@@ -105,10 +94,27 @@ class So101Robot(BaseRobot):
         obs = self.robot.get_observation()
         obs = _postprocess_observation(obs)
         obs = prepare_observation_for_inference(obs, "cuda")
+        self.logger.log_observation(obs)
         return obs
 
     def disconnect(self):
         self.robot.disconnect()
 
+    def _check_action_is_clamped(self, action1: dict, action2: dict) -> bool:
+        for name in So101MotorPosNames:
+            if action1[name.value] != action2[name.value]:
+                return True
+        return False
+
     def send_action(self, action: dict):
-        return self.robot.send_action(action)
+        sent_action = self.robot.send_action(action)
+
+        if self._check_action_is_clamped(action, sent_action):
+            print("⚠️ action is clamped")
+            print(f"expected: {action}")
+            print(f"sent: {sent_action}")
+
+        self.logger.log_action(action)
+
+    def on_end_of_frame(self):
+        self.logger.print()

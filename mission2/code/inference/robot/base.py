@@ -20,3 +20,7 @@ class BaseRobot(ABC):
     @abstractmethod
     def send_action(self, action: dict):
         pass
+
+    @abstractmethod
+    def on_end_of_frame(self):
+        pass

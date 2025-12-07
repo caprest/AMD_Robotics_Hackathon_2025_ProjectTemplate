@@ -1,3 +1,4 @@
+from .logger import DebugLogger
 from .base import BaseRobot
 import torch
 from ..dataset.dataset import Dataset
@@ -16,6 +17,7 @@ class SimRobot(BaseRobot):
         self.sequence_index = 0
 
         self.robot = So101Robot()
+        self.logger = DebugLogger()
 
     def connect(self):
         self.robot.connect()
@@ -26,7 +28,12 @@ class SimRobot(BaseRobot):
     def get_observation(self) -> dict[str, torch.Tensor]:
         observation = self.dataset[self.sequence_index]
         self.sequence_index += 1
+        self.logger.log_observation(observation)
         return observation
 
     def send_action(self, action: dict):
         self.robot.send_action(action)
+        self.logger.log_action(action)
+
+    def on_end_of_frame(self):
+        self.robot.on_end_of_frame()

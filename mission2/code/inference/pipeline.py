@@ -1,4 +1,4 @@
-from .robot.so101 import So101MotorPosNames
+from .robot.const import So101MotorPosNames
 from .robot.base import BaseRobot
 from .policy.act import ActPolicy
 from .sheet.sheet import Sheet
@@ -19,7 +19,12 @@ def _postprocess_action(action: torch.Tensor) -> dict:
 
 
 class InferencePipeline(object):
-    def __init__(self, robot: BaseRobot, policy: ActPolicy, sheet: Sheet):
+    def __init__(
+        self,
+        robot: BaseRobot,
+        policy: ActPolicy,
+        sheet: Sheet,
+    ):
         self.robot = robot
         self.policy = policy
         self.sheet = sheet
@@ -28,18 +33,27 @@ class InferencePipeline(object):
         print("🏃‍♀️ Running inference pipeline...")
 
         self.sheet.start()
+        _iter = 0
         while True:
-            note = self.sheet.get_note()
-            if note is None:
+            print("iter: ", _iter)
+            _iter += 1
+
+            note_num = self.sheet.tick_note()
+            if note_num is None:
                 print("🎼 Sheet ended")
                 break
+            note = self.sheet.number_to_note(note_num)
+            print("note:", note)
+            if note is None:
+                # DO NOTHING!
+                continue
 
             observation = self.robot.get_observation()
-            if "observation.environment_state" not in observation:
-                print(f"note: {self.sheet.number_to_note(note)}")
-                observation["observation.environment_state"] = torch.tensor(
-                    [note], dtype=torch.int64
-                )
-            action = self.policy.inference(observation)
+            action = self.policy.inference(observation, note)
+            if action is None:
+                print(f"No action for note: {note}")
+                continue
+
             action_dict = _postprocess_action(action)
             self.robot.send_action(action_dict)
+            self.robot.on_end_of_frame()

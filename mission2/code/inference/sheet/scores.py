@@ -1,4 +1,5 @@
 NOTE_TO_NUMBER = {
+    None: -1,
     "z": 0,
     "A3": 1,
     "B3": 2,
@@ -11,6 +12,21 @@ NOTE_TO_NUMBER = {
     "B4": 9,
     "C5": 10,
 }
+
+TestSequence = [  # Note: 8th note (duration=1)
+    (None, 2),
+    ("z", 2),
+    ("C4", 2),
+    ("z", 2),
+    ("E4", 2),
+    ("z", 2),
+    ("G4", 2),
+    ("z", 2),
+    ("E4", 2),
+    ("z", 2),
+    ("C4", 2),
+    ("z", 2),
+]
 
 JingleBells = [  # Note: 8th note (duration=1)
     ("E4", 2),
