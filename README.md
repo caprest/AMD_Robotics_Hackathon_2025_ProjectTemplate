@@ -5,7 +5,11 @@
 **Team:** 
 
 * Team 29:  東京ベイエリアの会
-* Team Members: Fumiya Shimada/ Michiya Abe/ Tomoyuki Hatakeyama/ Yukinori Manome
+* Team Members: 
+  * Fumiya Shimada
+  * Michiya Abe
+  * Tomoyuki Hatakeyama
+  * Yukinori Manome
 
 **Summary:**
 
@@ -20,7 +24,7 @@
 ## Submission Details
 
 ### 1. Mission Description
-- Play songs on a toy piano using the SO101 robot arms.
+- Play songs on a toy piano using the SO101 robot arm.
    - When provided with music sheet data, the robot is expected to play the song.
 
 ### 2. Creativity
@@ -39,6 +43,13 @@
 
 ### 3. Technical Implementations
 - We implemented three approaches.
+- For training details, please see the [link](mission2/code/training/README.md)
+
+- Our system setting:
+
+![System Setup](media/PXL_20251207_052925048.MP.webp)
+
+![System Setup from Top-down View](media/PXL_20251207_052935050.MP.webp)
 
 ### 3.1 Conditioned Model
 This model accepts a conditional vector representing the "intention of pressing each note" and executes the corresponding action. By switching the conditional vector in sync with the sheet timing, we aim to play any song.  
@@ -73,10 +84,10 @@ This model accepts a conditional vector representing the "intention of pressing 
 
 - *Teleoperation / Dataset Capture*
     - We captured the action of each sub-policy.
-    - We futher varied the piano position to achieve better generalization, especially for camera.
+    - We further varied the piano position to achieve better generalization, especially for the camera.
 - *Training*
     - We trained an ACT model for each sub-policy.
-    - We only used the fingertip camera to reduce training difficulty.
+    - We used only the fingertip camera to reduce training difficulty.
 - *Inference*
     - The inference script accepts musical score data and controls the robot by switching intention vectors accordingly.
 
@@ -89,6 +100,9 @@ Due to generalization difficulties, we further narrowed down the sub-policies to
 
 By combining these three models, we can play any song using C-E-G notes!
 
+- *Dataset Capture*
+   - We use two cameras: a fingertip camera and a top-down camera. This combination provides a good balance between precise finger control and comprehensive system understanding.
+
 **Operating modes:**
 - **Teleoperation mode**: You can manually switch between C-E, C-G, and C-C models at any time.
 - **Sheet mode**: The system automatically switches between models based on the music sheet.  
@@ -97,7 +111,7 @@ By combining these three models, we can play any song using C-E-G notes!
 
 ### 4. Ease of Use
 
-**Simplified setup**: Unlike traditional robotic systems requiring precise calibration and coordinate mapping, our learning-based approach only needs demonstration data collection via teleoperation. While retraining is required for new environments, this is far more accessible than programming explicit trajectories.
+**Simplified setup**: Unlike traditional robotic systems that require precise calibration and coordinate mapping, our learning-based approach only needs demonstration data collection via teleoperation. While retraining is required for new environments, this approach is far more accessible than programming explicit trajectories.
 
 **Dual operation modes**: Teleoperation mode allows manual triggering of C-E, C-G, or C-C sequences with keyboard commands, while sheet mode automatically plays songs from text-based music score files.
 
@@ -108,8 +122,3 @@ By combining these three models, we can play any song using C-E-G notes!
 
 ## Code submission
 
-
-**NOTES**
-
-1. The `latest-run` is the soft link, please make sure to copy the real target directory it linked with all sub dirs and files.
-2. Only provide (upload) the wandb of your last success pre-trained model for the Mission.
